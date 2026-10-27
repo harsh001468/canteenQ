@@ -1,0 +1,6 @@
+{
+  "name": "CanteenQ – Skip the Samosa Stampede",
+  "description": "AI-powered college canteen crowd & demand forecasting platform to eliminate lecture-break queues, optimize food preparation, and reduce waste.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

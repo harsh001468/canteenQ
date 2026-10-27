@@ -1,0 +1,1798 @@
+# 🐱 CanteenQ — AI-Powered Smart College Canteen Management System
+
+## 1. PROJECT OVERVIEW
+
+Build a complete full-stack web application called **CanteenQ**.
+
+Tagline:
+
+**“Skip the Samosa Stampede.”**
+
+CanteenQ is an AI-powered college canteen management platform designed to solve two major problems:
+
+1. Overcrowding during lecture breaks.
+2. Low demand and food wastage during events or non-peak hours.
+
+The system uses historical order data, class timetables, lecture breaks, event schedules, weather/context data if available, and historical demand patterns to:
+
+- Predict crowd levels.
+- Predict waiting time.
+- Forecast food-item demand.
+- Recommend the least crowded pickup slot.
+- Allow students to pre-order food.
+- Assign smart pickup slots.
+- Help canteen staff prepare the right quantity of food.
+- Reduce queues.
+- Reduce food wastage.
+- Prevent food shortages.
+- Provide real-time operational analytics.
+
+The application should look like a modern AI SaaS dashboard rather than a basic college project.
+
+---
+
+# 2. USER ROLES
+
+Create three main user roles:
+
+### Student
+
+Students can:
+
+- Register/login.
+- View today's menu.
+- See live crowd level.
+- See predicted crowd for upcoming slots.
+- View estimated waiting time.
+- Order food.
+- Select pickup slot.
+- Get AI-recommended pickup slot.
+- Track order status.
+- View order history.
+- Receive notifications.
+- Cancel an order before preparation.
+- View personalized recommendations.
+
+### Canteen Staff
+
+Staff can:
+
+- Login to staff dashboard.
+- View incoming orders.
+- Accept/reject orders.
+- Update order status.
+- View current queue.
+- View predicted crowd.
+- View demand forecast.
+- See recommended preparation quantities.
+- Mark items as available/out of stock.
+- View today's sales.
+- View wastage.
+- Manage pickup slots.
+
+### Admin
+
+Admin can:
+
+- Manage students.
+- Manage staff.
+- Manage menu.
+- Manage food items.
+- Manage timetable.
+- Manage events.
+- Upload historical order data.
+- View AI analytics.
+- View demand forecasts.
+- View crowd predictions.
+- View food waste analytics.
+- Configure prediction parameters.
+- View system performance.
+
+---
+
+# 3. TECHNOLOGY STACK
+
+Use a modern production-ready stack.
+
+## Frontend
+
+- React.js
+- Vite
+- Tailwind CSS
+- JavaScript/TypeScript
+- Recharts or equivalent chart library
+- React Router
+- Axios
+- Lucide React icons
+
+## Backend
+
+Use:
+
+- Node.js
+- Express.js
+
+Create REST APIs for:
+
+- Authentication
+- Users
+- Menu
+- Orders
+- Pickup slots
+- Crowd prediction
+- Demand forecasting
+- Timetable
+- Events
+- Analytics
+- Notifications
+
+## Database
+
+Use:
+
+- MongoDB
+
+Collections:
+
+- users
+- foodItems
+- orders
+- pickupSlots
+- timetable
+- events
+- demandForecasts
+- crowdPredictions
+- inventory
+- wasteRecords
+- notifications
+
+## AI/ML
+
+Create a modular prediction service.
+
+For prototype/demo:
+
+- Python
+- FastAPI
+- pandas
+- NumPy
+- scikit-learn
+
+Possible models:
+
+- Random Forest Regressor
+- Gradient Boosting
+- XGBoost if available
+- Time-series forecasting where appropriate
+
+The system should be designed so the model can later be replaced with a more advanced forecasting model.
+
+---
+
+# 4. AUTHENTICATION
+
+Implement secure authentication.
+
+Pages:
+
+- /login
+- /register
+- /forgot-password
+
+Registration fields:
+
+- Full name
+- College email
+- Student ID
+- Department
+- Year
+- Password
+
+Login:
+
+- Email
+- Password
+
+After login, redirect based on role:
+
+Student → Student Dashboard
+
+Staff → Staff Dashboard
+
+Admin → Admin Dashboard
+
+Use:
+
+- JWT authentication
+- Password hashing
+- Protected routes
+- Role-based authorization
+
+Never expose passwords in API responses.
+
+---
+
+# 5. STUDENT DASHBOARD
+
+Create a beautiful dashboard.
+
+Header:
+
+CanteenQ logo
+
+Navigation:
+
+- Dashboard
+- Menu
+- Pre-Order
+- Pickup Slots
+- My Orders
+- Recommendations
+- Profile
+
+Dashboard should display:
+
+### Current Crowd
+
+Example:
+
+**Current Crowd: 68%**
+
+Status:
+
+🔴 High
+
+### Estimated Wait
+
+**12 minutes**
+
+### AI Recommendation
+
+Example:
+
+> “The canteen is currently busy. Your best pickup slot is 2:00 PM–3:00 PM with an estimated wait of only 3 minutes.”
+
+### Upcoming Slots
+
+Display cards:
+
+10:00–11:00
+11:00–12:00
+12:00–1:00
+1:00–2:00
+2:00–3:00
+3:00–4:00
+
+Each card shows:
+
+- Crowd %
+- Crowd level
+- Estimated waiting time
+- Available pickup capacity
+- Recommended/not recommended
+
+Use colors:
+
+Green → Low
+
+Yellow → Medium
+
+Orange → High
+
+Red → Very High
+
+---
+
+# 6. AI CROWD PREDICTION
+
+Predict crowd level for every one-hour slot.
+
+Input features:
+
+- Historical order count
+- Historical order quantity
+- Day of week
+- Hour
+- Lecture break
+- Lunch break
+- Class schedule
+- Number of students free
+- College event
+- Event type
+- Historical crowd percentage
+- Historical waiting time
+- Previous slot demand
+- Food item demand
+
+Output:
+
+```json
+[
+  {
+    "time_slot": "10:00 AM - 11:00 AM",
+    "crowd_percentage": 32,
+    "crowd_level": "Low",
+    "estimated_wait_minutes": 4
+  },
+  {
+    "time_slot": "11:00 AM - 12:00 PM",
+    "crowd_percentage": 86,
+    "crowd_level": "Very High",
+    "estimated_wait_minutes": 15
+  }
+]
+```
+
+Crowd classification:
+
+0–30 → Low
+
+31–60 → Medium
+
+61–80 → High
+
+81–100 → Very High
+
+Do not generate impossible values above 100%.
+
+---
+
+# 7. SMART PICKUP SLOT
+
+Create an AI-powered recommendation engine.
+
+When a student wants to order food:
+
+1. Check student's class timetable.
+2. Check available breaks.
+3. Check predicted crowd.
+4. Check expected waiting time.
+5. Check pickup capacity.
+6. Check food availability.
+7. Recommend the most suitable available pickup slot.
+
+Example:
+
+Student classes:
+
+10:00–11:00
+
+11:00–12:00
+
+Break:
+
+12:00–1:00
+
+AI recommendation:
+
+```text
+Recommended Pickup
+
+12:20 PM – 12:30 PM
+
+Predicted Crowd: 38%
+
+Estimated Wait: 4 minutes
+
+Reason:
+Your class ends at 12:00 PM and this slot has lower predicted demand than 12:00–12:20 PM.
+```
+
+The system should not recommend a slot during the student's class unless explicitly allowed.
+
+---
+
+# 8. PRE-ORDER SYSTEM
+
+Students can pre-order food.
+
+Menu cards should contain:
+
+- Food image
+- Item name
+- Description
+- Price
+- Availability
+- Estimated preparation time
+- Add button
+
+Example:
+
+Samosa
+
+₹15
+
+Available
+
+Preparation: 5 min
+
+Quantity selector:
+
+- +
+- quantity
+- -
+
+Cart:
+
+- Items
+- Quantity
+- Price
+- Total
+
+Then:
+
+**Choose Pickup Slot**
+
+Show AI recommendation at the top.
+
+Example:
+
+⭐ AI Recommended
+
+**2:00 PM–2:15 PM**
+
+Crowd: 28%
+
+Wait: 3 min
+
+---
+
+# 9. ORDER STATUS
+
+After placing an order, show:
+
+### Order Confirmed
+
+Order #CQ1024
+
+Status timeline:
+
+1. Order Placed
+2. Accepted
+3. Preparing
+4. Ready
+5. Picked Up
+
+Provide estimated preparation time.
+
+Generate a QR code/order token for pickup.
+
+Example:
+
+**Pickup Token: CQ-4821**
+
+Student shows QR/token to canteen staff.
+
+---
+
+# 10. CANTEEN STAFF DASHBOARD
+
+Create a professional operational dashboard.
+
+Top metrics:
+
+- Orders Today
+- Current Queue
+- Current Crowd
+- Revenue Today
+- Items Sold
+- Food Waste
+- Pending Orders
+
+Example:
+
+Orders Today: 428
+
+Current Queue: 31
+
+Current Crowd: 72%
+
+Waste Today: 8.4 kg
+
+---
+
+# 11. LIVE ORDER QUEUE
+
+Display incoming orders in real time.
+
+Order card:
+
+Order #CQ1024
+
+Student: Harsh
+
+Items:
+
+2 × Samosa
+
+1 × Chai
+
+Pickup:
+
+1:30 PM
+
+Status:
+
+Preparing
+
+Buttons:
+
+Accept
+
+Preparing
+
+Ready
+
+Completed
+
+Cancel
+
+Use WebSocket/socket.io if possible for real-time updates.
+
+---
+
+# 12. DEMAND FORECASTING
+
+The AI must forecast item demand for each time slot.
+
+Example:
+
+```json
+{
+  "time_slot": "11:00 AM - 12:00 PM",
+  "forecast": {
+    "Samosa": 85,
+    "Chai": 110,
+    "Coffee": 32,
+    "Sandwich": 25,
+    "Maggi": 40
+  }
+}
+```
+
+Forecast based on:
+
+- Historical sales
+- Day of week
+- Hour
+- Lecture breaks
+- Events
+- Previous demand
+- Current orders
+- Seasonal patterns
+- Student behavior
+
+---
+
+# 13. SMART FOOD PREPARATION
+
+Do not simply show predicted demand.
+
+Calculate recommended preparation quantity.
+
+Formula:
+
+Recommended Quantity =
+
+Predicted Demand + Safety Buffer − Current Inventory
+
+Example:
+
+Predicted Samosa Demand = 90
+
+Safety Buffer = 10%
+
+Current ready inventory = 20
+
+Recommended preparation:
+
+79
+
+Show:
+
+```text
+Samosa
+
+Predicted Demand: 90
+
+Safety Buffer: 9
+
+Current Inventory: 20
+
+Recommended Preparation: 79
+```
+
+The safety buffer should be configurable by admin.
+
+---
+
+# 14. FOOD WASTE REDUCTION
+
+Track:
+
+- Prepared quantity
+- Sold quantity
+- Remaining quantity
+- Wasted quantity
+- Waste percentage
+
+Formula:
+
+Waste % =
+
+Wasted Quantity / Prepared Quantity × 100
+
+Dashboard example:
+
+```text
+Today's Food Waste
+
+Prepared: 1,250 items
+
+Sold: 1,170 items
+
+Wasted: 80 items
+
+Waste Rate: 6.4%
+```
+
+Display historical waste trends.
+
+Create a chart:
+
+Date vs Waste %
+
+Also display:
+
+**AI Waste Reduction Suggestion**
+
+Example:
+
+> “Reduce Tuesday 3 PM samosa preparation by approximately 15% based on historical demand.”
+
+---
+
+# 15. EVENT MODE
+
+This is an important feature.
+
+During college events, normal demand patterns may change.
+
+Admin can create:
+
+Event Name:
+
+Hackathon 2026
+
+Date:
+
+29 September 2026
+
+Start:
+
+10:00 AM
+
+End:
+
+5:00 PM
+
+Expected Students:
+
+500
+
+Event Type:
+
+Hackathon
+
+The AI should adjust predictions based on event information.
+
+Example:
+
+Normal demand:
+
+120 orders
+
+Event-adjusted demand:
+
+75 orders
+
+The system should explain:
+
+> “Demand is expected to be lower during this period because students are occupied with the event.”
+
+---
+
+# 16. TIMETABLE INTEGRATION
+
+Admin can upload or enter the class timetable.
+
+Example:
+
+```text
+09:00–10:00 → AI & DS
+10:00–11:00 → DBMS
+11:00–12:00 → Break
+12:00–01:00 → Data Mining
+01:00–02:00 → Lunch
+```
+
+The system should estimate how many students are likely to be free during each slot.
+
+Use this information as an AI feature.
+
+---
+
+# 17. CROWD HEATMAP
+
+Create a weekly heatmap.
+
+Rows:
+
+Monday
+Tuesday
+Wednesday
+Thursday
+Friday
+Saturday
+
+Columns:
+
+9 AM
+10 AM
+11 AM
+12 PM
+1 PM
+2 PM
+3 PM
+4 PM
+
+Cell value:
+
+Predicted crowd %
+
+Example:
+
+Monday 12 PM → 91%
+
+Tuesday 3 PM → 24%
+
+This helps staff identify recurring peak periods.
+
+---
+
+# 18. ANALYTICS DASHBOARD
+
+Admin analytics should include:
+
+### Crowd Analytics
+
+- Average crowd
+- Peak hour
+- Lowest crowd hour
+- Average waiting time
+
+### Sales Analytics
+
+- Total orders
+- Revenue
+- Top-selling item
+- Least-selling item
+
+### Demand Analytics
+
+- Forecast vs actual demand
+- Item demand trends
+- Slot-wise demand
+
+### Waste Analytics
+
+- Prepared
+- Sold
+- Wasted
+- Waste percentage
+
+### Operational Analytics
+
+- Average preparation time
+- Average pickup time
+- Cancellation rate
+- Order completion rate
+
+---
+
+# 19. FORECAST VS ACTUAL
+
+Create charts comparing:
+
+Predicted demand
+
+vs
+
+Actual demand
+
+Example:
+
+Samosa:
+
+Predicted = 100
+
+Actual = 94
+
+Prediction error = 6%
+
+Calculate forecasting metrics:
+
+- MAE
+- RMSE
+- MAPE where appropriate
+
+Display model accuracy transparently.
+
+Do not claim high accuracy without sufficient historical data.
+
+---
+
+# 20. DATABASE SCHEMA
+
+Create MongoDB models.
+
+## User
+
+```text
+_id
+name
+email
+passwordHash
+role
+studentId
+department
+year
+createdAt
+```
+
+## FoodItem
+
+```text
+_id
+name
+description
+price
+category
+image
+available
+preparationTime
+stock
+createdAt
+```
+
+## Order
+
+```text
+_id
+orderNumber
+userId
+items
+totalAmount
+pickupSlot
+status
+paymentStatus
+createdAt
+completedAt
+```
+
+## Timetable
+
+```text
+_id
+day
+startTime
+endTime
+subject
+department
+year
+section
+```
+
+## Event
+
+```text
+_id
+name
+date
+startTime
+endTime
+expectedAttendance
+eventType
+```
+
+## CrowdPrediction
+
+```text
+_id
+date
+timeSlot
+crowdPercentage
+crowdLevel
+estimatedWaitMinutes
+confidence
+```
+
+## DemandForecast
+
+```text
+_id
+date
+timeSlot
+item
+predictedQuantity
+actualQuantity
+recommendedPreparation
+confidence
+```
+
+## WasteRecord
+
+```text
+_id
+date
+item
+preparedQuantity
+soldQuantity
+wastedQuantity
+wastePercentage
+```
+
+---
+
+# 21. API STRUCTURE
+
+Create REST APIs.
+
+Authentication:
+
+```text
+POST /api/auth/register
+POST /api/auth/login
+GET /api/auth/me
+```
+
+Menu:
+
+```text
+GET /api/menu
+POST /api/menu
+PUT /api/menu/:id
+DELETE /api/menu/:id
+```
+
+Orders:
+
+```text
+POST /api/orders
+GET /api/orders
+GET /api/orders/:id
+PUT /api/orders/:id/status
+DELETE /api/orders/:id
+```
+
+Predictions:
+
+```text
+GET /api/predictions/crowd
+GET /api/predictions/demand
+GET /api/predictions/recommendation
+```
+
+Timetable:
+
+```text
+GET /api/timetable
+POST /api/timetable
+PUT /api/timetable/:id
+DELETE /api/timetable/:id
+```
+
+Events:
+
+```text
+GET /api/events
+POST /api/events
+PUT /api/events/:id
+DELETE /api/events/:id
+```
+
+Analytics:
+
+```text
+GET /api/analytics/dashboard
+GET /api/analytics/sales
+GET /api/analytics/waste
+GET /api/analytics/crowd
+GET /api/analytics/forecast
+```
+
+---
+
+# 22. AI PREDICTION API
+
+Create a Python FastAPI service.
+
+Endpoints:
+
+```text
+POST /predict/crowd
+
+POST /predict/demand
+
+POST /recommend/pickup-slot
+
+POST /forecast/waste
+```
+
+Example crowd request:
+
+```json
+{
+  "date": "2026-09-29",
+  "day_of_week": "Tuesday",
+  "hour": 12,
+  "historical_orders": 120,
+  "is_break": true,
+  "is_event": false,
+  "expected_students": 350
+}
+```
+
+Response:
+
+```json
+{
+  "crowd_percentage": 78,
+  "crowd_level": "High",
+  "estimated_wait_minutes": 11,
+  "confidence": 0.84
+}
+```
+
+---
+
+# 23. COLD START / NO DATA HANDLING
+
+If historical data is unavailable:
+
+Do NOT pretend that the AI has trained on real college data.
+
+Instead:
+
+- Generate clearly labeled simulated/demo data.
+- Use timetable-based assumptions.
+- Use configurable baseline demand.
+- Display:
+
+“Demo Prediction — Upload historical order data to train predictions on real canteen behavior.”
+
+Admin should be able to upload CSV.
+
+CSV format:
+
+```text
+timestamp,item,quantity,order_id
+2026-09-01 10:20,Samosa,2,1001
+2026-09-01 10:22,Chai,1,1002
+```
+
+After upload:
+
+1. Validate data.
+2. Clean missing values.
+3. Remove invalid records.
+4. Generate features.
+5. Train/update model.
+6. Evaluate model.
+7. Store prediction results.
+
+---
+
+# 24. REAL-TIME FEATURES
+
+Use Socket.IO or equivalent.
+
+Real-time updates:
+
+- New order
+- Order status
+- Queue size
+- Current crowd
+- Item availability
+- Pickup slot capacity
+
+Student dashboard should update without refreshing.
+
+---
+
+# 25. PICKUP SLOT CAPACITY
+
+Each pickup slot should have configurable capacity.
+
+Example:
+
+2:00–2:15 PM
+
+Maximum orders:
+
+20
+
+Current orders:
+
+17
+
+Remaining:
+
+3
+
+When capacity is reached:
+
+Show:
+
+❌ Slot Full
+
+Automatically recommend the next available low-crowd slot.
+
+---
+
+# 26. SMART NOTIFICATIONS
+
+Students should receive notifications:
+
+- Order accepted
+- Food preparation started
+- Food ready
+- Pickup reminder
+- Slot changed
+- Item unavailable
+
+Example:
+
+> 🔔 Your CanteenQ order CQ1024 is ready for pickup at Counter 2.
+
+Staff notifications:
+
+> ⚠️ Predicted demand for chai between 12–1 PM is 35% higher than normal.
+
+Admin notifications:
+
+> 📊 Today's food waste is 18% lower than the weekly average.
+
+---
+
+# 27. PAYMENT
+
+For prototype:
+
+Support:
+
+- Cash at pickup
+- Demo UPI payment
+
+Do not implement fake payment confirmation.
+
+Payment status should be:
+
+```text
+Pending
+Paid
+Failed
+Refunded
+```
+
+If a real payment gateway is integrated later, use its official backend verification/webhook mechanism.
+
+---
+
+# 28. UI DESIGN
+
+Design should be modern, clean, responsive and professional.
+
+Style:
+
+- AI SaaS dashboard
+- Rounded cards
+- Clean typography
+- Soft shadows
+- Minimal animations
+- Responsive layout
+- Mobile-first student experience
+- Desktop-first staff/admin dashboard
+
+Primary branding:
+
+CanteenQ
+
+Logo concept:
+
+🐱 + Queue/food concept
+
+Possible tagline:
+
+**“Skip the Samosa Stampede.”**
+
+Use icons for:
+
+- Crowd
+- Food
+- Orders
+- Clock
+- AI
+- Analytics
+- Waste
+- Events
+
+---
+
+# 29. REQUIRED PAGES
+
+Create these pages:
+
+### Public
+
+1. Landing Page
+2. Login
+3. Register
+
+### Student
+
+4. Student Dashboard
+5. Menu
+6. Food Details
+7. Cart
+8. Pickup Slot Selection
+9. Order Confirmation
+10. Order Tracking
+11. Order History
+12. Recommendations
+13. Profile
+
+### Staff
+
+14. Staff Dashboard
+15. Live Orders
+16. Queue Management
+17. Demand Forecast
+18. Inventory
+19. Waste Tracking
+20. Menu Management
+
+### Admin
+
+21. Admin Dashboard
+22. Users
+23. Timetable
+24. Events
+25. Historical Data Upload
+26. AI Predictions
+27. Analytics
+28. Forecast Accuracy
+29. Settings
+
+---
+
+# 30. LANDING PAGE
+
+Hero section:
+
+## Skip the Samosa Stampede.
+
+### AI-powered campus canteen management.
+
+Predict the rush. Pre-order your food. Pick it up when the queue is calm.
+
+Buttons:
+
+**Order Food**
+
+**View Demo**
+
+Show visual dashboard preview.
+
+Stats:
+
+```text
+↓ Queue Time
+↑ Prediction Accuracy
+↓ Food Waste
+↑ Student Convenience
+```
+
+Feature cards:
+
+### AI Crowd Prediction
+
+Know when the canteen will be busy.
+
+### Smart Pickup
+
+Get the best pickup slot based on your timetable.
+
+### Demand Forecasting
+
+Prepare the right amount of food.
+
+### Waste Reduction
+
+Reduce unnecessary food preparation.
+
+---
+
+# 31. STUDENT EXPERIENCE
+
+Ideal flow:
+
+```text
+Login
+ ↓
+Dashboard
+ ↓
+View Crowd Prediction
+ ↓
+View Menu
+ ↓
+Add Food
+ ↓
+AI Suggests Pickup Slot
+ ↓
+Confirm Order
+ ↓
+Get QR/Order Token
+ ↓
+Food Prepared
+ ↓
+Pickup
+ ↓
+Order Completed
+```
+
+Make this flow extremely simple.
+
+---
+
+# 32. STAFF EXPERIENCE
+
+```text
+Login
+ ↓
+Staff Dashboard
+ ↓
+View Current Queue
+ ↓
+View Incoming Orders
+ ↓
+View AI Demand Forecast
+ ↓
+Prepare Recommended Quantity
+ ↓
+Update Order Status
+ ↓
+Track Waste
+```
+
+---
+
+# 33. ADMIN EXPERIENCE
+
+```text
+Login
+ ↓
+Admin Dashboard
+ ↓
+Upload Historical Data
+ ↓
+Configure Timetable
+ ↓
+Add Events
+ ↓
+Train/Update AI Model
+ ↓
+View Predictions
+ ↓
+Compare Forecast vs Actual
+ ↓
+Optimize Operations
+```
+
+---
+
+# 34. SAMPLE DEMO DATA
+
+Create realistic demo data for:
+
+- 30 days of historical orders
+- 10–15 food items
+- 6 days/week
+- Multiple lecture breaks
+- 3–5 college events
+- Different demand patterns
+
+Example food items:
+
+Samosa
+Chai
+Coffee
+Maggi
+Sandwich
+Veg Burger
+Cold Coffee
+Poha
+Momos
+Pizza Slice
+Cold Drink
+Water
+
+Make demo data clearly identifiable as simulated data.
+
+---
+
+# 35. AI INSIGHTS
+
+The dashboard should automatically generate operational insights.
+
+Examples:
+
+> “11:00 AM–12:00 PM is expected to be today's busiest slot.”
+
+> “Chai demand is expected to increase during the 12:00 PM lecture break.”
+
+> “Samosa demand is 22% lower during today's event period compared with normal Tuesdays.”
+
+> “Consider preparing 15% fewer sandwiches between 3:00 PM–4:00 PM.”
+
+> “The 2:00 PM–3:00 PM pickup window currently has the lowest predicted crowd.”
+
+Insights must be based on available data and should not be fabricated.
+
+---
+
+# 36. CONFIDENCE SCORE
+
+Every AI prediction should include confidence.
+
+Example:
+
+```text
+Crowd Prediction: 72%
+
+Confidence: 86%
+```
+
+If data quality is low:
+
+```text
+Confidence: Low
+
+Reason:
+Only 5 days of historical data are available.
+```
+
+Never present uncertain predictions as guaranteed facts.
+
+---
+
+# 37. ERROR HANDLING
+
+Implement proper:
+
+- API error handling
+- Loading states
+- Empty states
+- Network error messages
+- Authentication errors
+- Invalid data handling
+- Prediction service failure handling
+
+Example:
+
+If AI service is unavailable:
+
+> “AI prediction is temporarily unavailable. Showing historical average.”
+
+The entire application should continue functioning.
+
+---
+
+# 38. SECURITY
+
+Implement:
+
+- JWT authentication
+- Password hashing
+- Role-based access control
+- Input validation
+- API authorization
+- Rate limiting
+- CORS configuration
+- Environment variables
+- No hardcoded secrets
+
+Use:
+
+```text
+.env
+```
+
+for:
+
+```text
+MONGODB_URI
+JWT_SECRET
+AI_SERVICE_URL
+PAYMENT_SECRET
+```
+
+Never expose secrets in frontend code.
+
+---
+
+# 39. RESPONSIVE DESIGN
+
+The application must work on:
+
+- Desktop
+- Laptop
+- Tablet
+- Mobile
+
+Student interface should be especially optimized for mobile.
+
+Staff/Admin dashboards should work well on desktop.
+
+---
+
+# 40. ACCESSIBILITY
+
+Include:
+
+- Semantic HTML
+- Keyboard navigation
+- Accessible buttons
+- Form labels
+- Good contrast
+- Screen-reader friendly elements
+- Clear error messages
+
+---
+
+# 41. PERFORMANCE
+
+Optimize:
+
+- API calls
+- Database queries
+- Dashboard loading
+- Charts
+- Images
+- Prediction requests
+
+Use caching where appropriate.
+
+Avoid unnecessary API requests.
+
+---
+
+# 42. PROJECT STRUCTURE
+
+Create a clean structure:
+
+```text
+canteenq/
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── layouts/
+│   │   ├── hooks/
+│   │   ├── services/
+│   │   ├── utils/
+│   │   └── App.jsx
+│
+├── backend/
+│   ├── controllers/
+│   ├── routes/
+│   ├── models/
+│   ├── middleware/
+│   ├── services/
+│   ├── utils/
+│   └── server.js
+│
+├── ai-service/
+│   ├── models/
+│   ├── data/
+│   ├── training/
+│   ├── prediction/
+│   └── main.py
+│
+└── README.md
+```
+
+---
+
+# 43. DEMO MODE
+
+Add a Demo Mode so judges can immediately understand the project.
+
+Demo accounts:
+
+```text
+Student:
+student@demo.com
+
+Staff:
+staff@demo.com
+
+Admin:
+admin@demo.com
+```
+
+Do not use real passwords in production.
+
+Demo mode should include:
+
+- Simulated crowd data
+- Simulated orders
+- Simulated demand
+- Sample events
+- Sample timetable
+- Sample analytics
+
+Add a small label:
+
+**DEMO DATA**
+
+---
+
+# 44. JUDGE-FRIENDLY FEATURES
+
+Create a dedicated section demonstrating the core innovation.
+
+Show:
+
+### Problem
+
+Crowded breaks + empty event periods.
+
+### AI Solution
+
+Crowd prediction + demand forecasting + smart pickup.
+
+### Impact
+
+Potentially:
+
+- Lower waiting time
+- Better food availability
+- Lower waste
+- Better staff planning
+
+Do not claim measured improvements unless actual data supports them.
+
+---
+
+# 45. MAIN AI OUTPUT
+
+The primary AI endpoint should return:
+
+```json
+{
+  "date": "2026-09-29",
+  "slots": [
+    {
+      "time_slot": "10:00 AM - 11:00 AM",
+      "crowd_percentage": 35,
+      "crowd_level": "Medium",
+      "wait_minutes": 5,
+      "confidence": 0.82,
+      "item_demand": {
+        "Samosa": 42,
+        "Chai": 55,
+        "Coffee": 18
+      }
+    }
+  ],
+  "recommendation": "12:00 PM - 12:15 PM is the least crowded suitable pickup slot.",
+  "insights": [
+    "Chai demand is expected to peak during the lunch break.",
+    "Crowd is expected to increase between 11 AM and 12 PM."
+  ]
+}
+```
+
+---
+
+# 46. FINAL DASHBOARD SUMMARY
+
+At the top of the main dashboard display:
+
+```text
+🐱 CanteenQ
+
+Skip the Samosa Stampede.
+
+Current Crowd
+68%
+
+Estimated Wait
+12 min
+
+Today's Orders
+428
+
+Food Waste
+6.4%
+
+AI Recommended Pickup
+2:00 PM – 2:15 PM
+```
+
+Then:
+
+```text
+Crowd Prediction
+[Line/Area Chart]
+
+Demand Forecast
+[Bar Chart]
+
+Peak Hours
+[Heatmap]
+
+Top Food Items
+[Horizontal Bar Chart]
+
+Food Waste
+[Trend Chart]
+```
+
+---
+
+# 47. IMPORTANT PRODUCT RULES
+
+The system must:
+
+1. Never fabricate real historical data.
+2. Clearly distinguish simulated/demo predictions from real predictions.
+3. Never guarantee prediction accuracy.
+4. Show confidence levels.
+5. Handle missing data.
+6. Prevent overbooking pickup slots.
+7. Consider student timetable conflicts.
+8. Consider current inventory.
+9. Account for college events.
+10. Continuously compare predicted vs actual demand.
+11. Keep student and admin data secure.
+12. Make the AI explanation understandable to non-technical users.
+
+---
+
+# 48. FINAL GOAL
+
+Build CanteenQ as a complete working prototype, not just a static UI.
+
+The final application should demonstrate this complete intelligent loop:
+
+Historical Data
+→ AI Prediction
+→ Crowd Forecast
+→ Demand Forecast
+→ Smart Pickup Recommendation
+→ Student Pre-Order
+→ Staff Preparation
+→ Order Pickup
+→ Actual Sales
+→ Waste Tracking
+→ Forecast vs Actual
+→ Model Improvement
+
+The core value proposition is:
+
+**“Predict the rush before it happens, move students into calmer pickup slots, and help the canteen prepare exactly what students are likely to buy.”**
+
+Build the application with clean architecture, reusable components, realistic demo data, functional APIs, responsive UI, AI prediction logic, role-based dashboards, and a polished hackathon-ready user experience.
